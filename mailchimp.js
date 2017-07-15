@@ -1,9 +1,6 @@
 var api_key, Mailchimp_SDK, mailchimp_api, distribution_lists 
 
 var MailChimp = function(api_key) {
-    if(api_key === null) {
-       api_key = process.env.MAILCHIMP_API_KEY; 
-   }
     Mailchimp_SDK = require('mailchimp-api-v3')
     mailchimp_api = new Mailchimp_SDK(api_key);
 }

@@ -7,7 +7,7 @@ let express = require('express');
 let bodyParser = require('body-parser');
 
 let Mailchimp = require('./mailchimp.js')
-let mailchimp = new Mailchimp()
+let mailchimp = new Mailchimp(process.env.MAILCHIMP_API_KEY)
 
 let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
