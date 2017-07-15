@@ -1,4 +1,4 @@
-var api_key, Mailchimp_SDK, mailchimp_api 
+var api_key, Mailchimp_SDK, mailchimp_api, distribution_lists 
 
 var MailChimp = function(api_key) {
     if(api_key === null) {
@@ -13,26 +13,35 @@ var MailChimp = function(api_key) {
  * @param {Function} error_callback
  * @param {Function} success_callback
  */
-MailChimp.prototype.createCampaign = function (error_callback, success_callback) {
-    console.log('creating campaign..')
-      mailchimp_api.post('campaigns', {
-        "recipients":{"list_id":"00ea6e084d"},
-        "type":"regular",
-        "settings":{
-          "subject_line":"Your Purchase Receipt",
-          "reply_to":"ckirksey3@gmail.com",
-          "from_name":"Customer Service"
+MailChimp.prototype.createCampaign = function (list_name, error_callback, success_callback) {
+    console.log('creating campaign for list name: ' + list_name)
+    if(distribution_lists != null) {
+        let list_to_send_to = distribution_lists.find(function(list) {
+            return list.name === list_name;
+        })
+        console.log('creating campaign for list id: ' + list_to_send_to.id)
+        mailchimp_api.post('campaigns', {
+            "recipients":{"list_id":`${list_to_send_to.id}`},
+            "type":"regular",
+            "settings":{
+              "subject_line":"Your Purchase Receipt",
+              "reply_to":"ckirksey3@gmail.com",
+              "from_name":"Customer Service"
         }
-      })
-      .then(function(results) {
+        })
+        .then(function(results) {
           console.log('campaign created');
           console.log(results);
           success_callback(results.id)
-      })
-      .catch(function (err) {
+        })
+        .catch(function (err) {
           console.log('error');
           error_callback(err)
-      })
+        })
+    } else {
+        console.log('distribution_lists has not been populated')
+        error_callback('distribution_lists has not been populated')
+    }
 }
 
 /**
@@ -70,6 +79,25 @@ MailChimp.prototype.sendCampaign = function (campaign_id, error_callback, succes
       console.log('campaign sent');
       console.log(results);
       success_callback(results)
+    })
+    .catch(function (err) {
+      console.log('error');
+      error_callback(err)
+    })
+}
+
+/**
+ * Gets a list of the distribution lists in the user's MailChimp account
+ * @param {Function} error_callback
+ * @param {Function} success_callback
+ */
+MailChimp.prototype.getLists = function (error_callback, success_callback) {
+    console.log('looking for lists..')
+    mailchimp_api.get('lists')
+    .then(function(results) {
+      console.log('lists found');
+      distribution_lists = results.lists;
+      success_callback(results.lists)
     })
     .catch(function (err) {
       console.log('error');
