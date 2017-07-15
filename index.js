@@ -6,12 +6,11 @@ let Assistant = require('actions-on-google').ApiAiAssistant;
 let express = require('express');
 let bodyParser = require('body-parser');
 
+let Mailchimp = require('./mailchimp.js')
+let mailchimp = new Mailchimp()
+
 let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
-
-const api_key = process.env.MAILCHIMP_API_KEY;
-const Mailchimp = require('mailchimp-api-v3')
-const mailchimp = new Mailchimp(api_key);
 
 // API.AI actions
 const UNRECOGNIZED_DEEP_LINK = 'deeplink.unknown';
@@ -43,100 +42,37 @@ app.post('/', function (request, response) {
     }
   }
 
-  function createCampaign(assistant, callback) {
-      console.log('creating campaign..')
-      mailchimp.post('campaigns', {
-        "recipients":{"list_id":"00ea6e084d"},
-        "type":"regular",
-        "settings":{
-          "subject_line":"Your Purchase Receipt",
-          "reply_to":"ckirksey3@gmail.com",
-          "from_name":"Customer Service"
-        }
-      })
-      .then(function(results) {
-          console.log('campaign created');
-          console.log(results);
-          callback(assistant, results.id, null)
-      })
-      .catch(function (err) {
-          console.log('error');
-          callback(assistant, null, err)
-      })
+  function handleCampaignSend(campaign_id) {
+      console.log("sent campaign")
+      assistant.ask('Congrats! We sent the campaign');
+      return;
   }
 
-  function editCampaign(assistant, id, callback) {
-      console.log('editing campaign..')
-      mailchimp.put(`campaigns/${id}/content`, {
-          'html': '<p>The HTML to use for the saved campaign<./p>'
-      })
-      .then(function(results) {
-          console.log('campaign edited');
-          console.log(results);
-          callback(assistant, id, null)
-      })
-      .catch(function (err) {
-          console.log('error');
-          callback(assistant, null, err)
-      })
+  function handleError(error) {
+      console.log(error)
+      assistant.ask('Sorry, something went wrong');
+      return;
   }
 
-  function sendCampaign(assistant, id, callback) {
-      console.log('sending campaign with id: ' + id)
-      mailchimp.post(`campaigns/${id}/actions/send`)
-      .then(function(results) {
-          console.log('campaign sent');
-          console.log(results);
-          callback(assistant, results, null)
-      })
-      .catch(function (err) {
-          console.log('error');
-          callback(assistant, null, err)
-      })
+  function handleCampaignEdit(campaign_id) {
+      console.log("edited campaign with id of " + campaign_id)
+      mailchimp.sendCampaign(campaign_id, handleError, handleCampaignSend)
+      return;
   }
 
-  function handleCampaignSend(assistant, id, error) {
-      if (error === null) {
-        console.log("sent campaign")
-        assistant.ask('Congrats! We sent the campaign',
-          NULL_INPUTS);
-        return;
-      } else {
-        console.log(error)
-        return;
-      }
-  }
-
-  function handleCampaignEdit(assistant, id, error) {
-      if (error === null) {
-        console.log("edited campaign with id of " + id)
-        sendCampaign(assistant, id, handleCampaignSend)
-        return;
-      } else {
-        console.log(error)
-        return;
-      }
-  }
-
-  function handleCampaignCreation(assistant, id, error) {
-      if (error === null) {
-        console.log("created campaign with id of " + id)
-        editCampaign(assistant, id, handleCampaignEdit)
-        return;
-      } else {
-        console.log(error)
-        return;
-      }
+  function handleCampaignCreation(campaign_id) {
+      console.log("created campaign with id of " + campaign_id)
+      mailchimp.editCampaign(campaign_id, handleError, handleCampaignEdit)
+      return;
   }
 
   function createAndSendCampaign (assistant) {
-      createCampaign(assistant, handleCampaignCreation);
+      mailchimp.createCampaign(handleError, handleCampaignCreation);
   }
 
   let actionMap = new Map();
   actionMap.set(UNRECOGNIZED_DEEP_LINK, unhandledDeepLinks);
   actionMap.set(CREATE_CAMPAIGN, createAndSendCampaign);
-
   assistant.handleRequest(actionMap);
 });
 
