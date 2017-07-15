@@ -16,7 +16,7 @@ var MailChimp = function(api_key) {
 MailChimp.prototype.createCampaign = function (list_name, error_callback, success_callback) {
     console.log('creating campaign for list name: ' + list_name)
     if(distribution_lists != null) {
-        let list_to_send_to = distribution_lists.find(function(list) {
+        list_to_send_to = distribution_lists.find(function(list) {
             return list.name === list_name;
         })
         console.log('creating campaign for list id: ' + list_to_send_to.id)
