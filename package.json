@@ -1,0 +1,25 @@
+{
+  "name": "mailchimp-google-assistant",
+  "description": "Manage MailChimp campaigns",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "author": "Caleb Kirksey",
+  "engines": {
+    "node": "~4.2"
+  },
+  "scripts": {
+    "lint": "semistandard --fix \"**/*.js\"",
+    "start": "firebase serve --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "actions-on-google": "^1.0.0",
+    "mailchimp-api-v3": "^1.7.0",
+    "express": "^4.15.3",
+    "body-parser": "^1.17.2"
+  },
+  "devDependencies": {
+    "semistandard": "^9.1.0"
+  }
+}
