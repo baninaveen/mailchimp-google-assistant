@@ -71,7 +71,7 @@ app.post('/', function (request, response) {
 
   function handleAnswer() {
     console.log("handling user answer: ");
-    let answer = app.getContextArgument('actions_intent_option', 'OPTION').value;
+    let answer = app.getSelectedOption();
     console.log(answer);
     if(last_question_asked == 'which_list_to_send_to') {
       mailchimp.createCampaign(answer, handleError, handleCampaignCreation);
