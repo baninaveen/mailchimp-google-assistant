@@ -81,10 +81,13 @@ app.post('/', function (request, response) {
 
   function createAndSendCampaign (assistant) {
       mailchimp.getLists(handleError, function(lists) {
-        let list_names = lists.map(function(list){return list.name});
-        assistant.ask(assistant.buildRichResponse()
-          .addSimpleResponse('Which list should we send the campaign to?')
-          .addSuggestions(list_names));
+        let list_items = lists.map(function(list){
+          return assistant.buildOptionItem(list.id)
+            .setTitle(list.name)
+        });
+        assistant.askWithlist('Which list should we send the campaign to?',
+        assistant.buildList('MailChimp Lists')
+         .addItems([list_items]));
         last_question_asked = 'which_list_to_send_to';
       });
   }
@@ -92,7 +95,7 @@ app.post('/', function (request, response) {
   let actionMap = new Map();
   actionMap.set(UNRECOGNIZED_DEEP_LINK, unhandledDeepLinks);
   actionMap.set(CREATE_CAMPAIGN, createAndSendCampaign);
-  actionMap.set(HANDLE_ANSWER, handleAnswer);
+  actionMap.set(assistant.StandardIntents.OPTION, handleAnswer);
   assistant.handleRequest(actionMap);
 });
 

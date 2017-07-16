@@ -10,15 +10,16 @@ var MailChimp = function(api_key) {
  * @param {Function} error_callback
  * @param {Function} success_callback
  */
-MailChimp.prototype.createCampaign = function (list_name, error_callback, success_callback) {
+MailChimp.prototype.createCampaign = function (list_id, error_callback, success_callback) {
     console.log('creating campaign for list name: ' + list_name)
     if(distribution_lists != null) {
-        list_to_send_to = distribution_lists.find(function(list) {
-            return list.name === list_name;
-        })
-        console.log('creating campaign for list id: ' + list_to_send_to.id)
+        // list_to_send_to = distribution_lists.find(function(list) {
+        //     return list.name === list_name;
+        // })
+        // console.log('creating campaign for list id: ' + list_to_send_to.id)
+        console.log('creating campaign for list id: ' + list_id)
         mailchimp_api.post('campaigns', {
-            "recipients":{"list_id":`${list_to_send_to.id}`},
+            "recipients":{"list_id":`${list_id}`},
             "type":"regular",
             "settings":{
               "subject_line":"Your Purchase Receipt",
