@@ -74,7 +74,7 @@ app.post('/', function (request, response) {
 
   function handleEmailBodyGiven() {
     console.log("handling user answer: ");
-    let email_body = assistant.getRawInput()();
+    let email_body = assistant.getRawInput();
     console.log(email_body);
     mailchimp.editCampaign(email_body, current_campaign_id, handleError, handleCampaignEdit)
     return;
