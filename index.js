@@ -1,7 +1,7 @@
 'use strict';
 
 process.env.DEBUG = 'actions-on-google:*';
-let Assistant = require('actions-on-google').ApiAiAssistant;
+let ApiAiApp = require('actions-on-google').ApiAiApp;
 
 let express = require('express');
 let bodyParser = require('body-parser');
@@ -23,7 +23,7 @@ var last_question_asked;
 const CATEGORY_ARGUMENT = 'category';
 
 app.post('/', function (request, response) {
-  const assistant = new Assistant({request: request, response: response});
+  const assistant = new ApiAiApp({request: request, response: response});
   console.log('Request headers: ' + JSON.stringify(request.headers));
   console.log('Request body: ' + JSON.stringify(request.body));
 
@@ -81,21 +81,28 @@ app.post('/', function (request, response) {
 
   function createAndSendCampaign (assistant) {
       mailchimp.getLists(handleError, function(lists) {
-        let list_items = lists.map(function(list){
-          return assistant.buildOptionItem(list.id)
-            .setTitle(list.name)
-        });
-        assistant.askWithlist('Which list should we send the campaign to?',
-        assistant.buildList('MailChimp Lists')
-         .addItems([list_items]));
-        last_question_asked = 'which_list_to_send_to';
+        if(lists.length < 1) {
+          assistant.tell('You need to create a list in MailChimp before we can send a campaign')
+        }
+        else if(lists.length == 1) {
+          mailchimp.createCampaign(lists[0].id, handleError, handleCampaignCreation);
+        } else {
+          let list_items = lists.map(function(list){
+            return assistant.buildOptionItem(list.id)
+              .setTitle(list.name)
+          });
+          assistant.askWithList('Which list should we send the campaign to?',
+          assistant.buildList('MailChimp Lists')
+           .addItems(list_items));
+          last_question_asked = 'which_list_to_send_to';
+        }
       });
   }
 
   let actionMap = new Map();
   actionMap.set(UNRECOGNIZED_DEEP_LINK, unhandledDeepLinks);
   actionMap.set(CREATE_CAMPAIGN, createAndSendCampaign);
-  actionMap.set(assistant.StandardIntents.OPTION, handleAnswer);
+  actionMap.set(HANDLE_ANSWER, handleAnswer);
   assistant.handleRequest(actionMap);
 });
 
