@@ -15,9 +15,11 @@ app.use(bodyParser.json({type: 'application/json'}));
 // API.AI actions
 const UNRECOGNIZED_DEEP_LINK = 'deeplink.unknown';
 const CREATE_CAMPAIGN = 'create.campaign';
-const HANDLE_ANSWER = "answer.selected";
+const LIST_SELECTED = "list.selected";
+const EMAIL_BODY_GIVEN = "email.body.given";
 
 var last_question_asked;
+var current_campaign_id;
 
 // API.AI parameter names
 const CATEGORY_ARGUMENT = 'category';
@@ -58,18 +60,27 @@ app.post('/', function (request, response) {
   }
 
   function handleCampaignEdit(campaign_id) {
-    console.log("edited campaign with id of " + campaign_id)
-    mailchimp.sendCampaign(campaign_id, handleError, handleCampaignSend)
+    console.log("edited campaign with id of " + campaign_id);
+    mailchimp.sendCampaign(campaign_id, handleError, handleCampaignSend);
     return;
   }
 
   function handleCampaignCreation(campaign_id) {
-    console.log("created campaign with id of " + campaign_id)
-    mailchimp.editCampaign(campaign_id, handleError, handleCampaignEdit)
+    console.log("created campaign with id of " + campaign_id);
+    current_campaign_id = campaign_id;
+    assistant.ask('What should we say in the email?');
     return;
   }
 
-  function handleAnswer() {
+  function handleEmailBodyGiven() {
+    console.log("handling user answer: ");
+    let email_body = assistant.getRawInput();
+    console.log(email_body);
+    mailchimp.editCampaign(email_body, current_campaign_id, handleError, handleCampaignEdit)
+    return;
+  }
+
+  function handleListSelection() {
     console.log("handling user answer: ");
     let answer = assistant.getSelectedOption();
     console.log(answer);
@@ -82,7 +93,7 @@ app.post('/', function (request, response) {
   function createAndSendCampaign (assistant) {
       mailchimp.getLists(handleError, function(lists) {
         if(lists.length < 1) {
-          assistant.tell('You need to create a list in MailChimp before we can send a campaign')
+          assistant.tell('You need to create a list in MailChimp before we can send a campaign');
         }
         else if(lists.length == 1) {
           mailchimp.createCampaign(lists[0].id, handleError, handleCampaignCreation);
@@ -102,7 +113,8 @@ app.post('/', function (request, response) {
   let actionMap = new Map();
   actionMap.set(UNRECOGNIZED_DEEP_LINK, unhandledDeepLinks);
   actionMap.set(CREATE_CAMPAIGN, createAndSendCampaign);
-  actionMap.set(HANDLE_ANSWER, handleAnswer);
+  actionMap.set(LIST_SELECTED, handleListSelection);
+  actionMap.set(EMAIL_BODY_GIVEN, handleEmailBodyGiven);
   assistant.handleRequest(actionMap);
 });
 

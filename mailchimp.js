@@ -43,10 +43,10 @@ MailChimp.prototype.createCampaign = function (list_id, error_callback, success_
  * @param {Function} error_callback
  * @param {Function} success_callback
  */
-MailChimp.prototype.editCampaign = function (campaign_id, error_callback, success_callback) {
+MailChimp.prototype.editCampaign = function (email_body, campaign_id, error_callback, success_callback) {
     console.log('editing campaign..')
     mailchimp_api.put(`campaigns/${campaign_id}/content`, {
-      'html': '<p>The HTML to use for the saved campaign<./p>'
+      'html': `<p>${email_body}<./p>`
     })
     .then(function(results) {
       console.log('campaign edited');
