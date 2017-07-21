@@ -8,25 +8,13 @@
   "engines": {
     "node": "~4.2"
   },
-  "scripts": {
-    "lint": "semistandard --fix \"**/*.js\"",
-    "start": "firebase serve --only functions",
-    "deploy": "firebase deploy --only functions",
-    "validate": "npm ls"
-  },
   "dependencies": {
     "actions-on-google": "^1.0.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
-    "mailchimp-api-v3": "^1.7.0",
-    "precommit-hook": "^3.0.0"
+    "mailchimp-api-v3": "^1.7.0"
   },
   "devDependencies": {
     "semistandard": "^9.1.0"
-  },
-  "pre-commit": [
-    "lint",
-    "validate",
-    "test"
-  ]
+  }
 }

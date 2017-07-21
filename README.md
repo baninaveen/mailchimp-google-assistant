@@ -57,6 +57,6 @@ heroku info
 ### Preview the app
 ![preview app](images/preview_screenshot.png "Preview the App")
 1. Click on **Integrations** in API.AI's left navigation, and move the slider bar for the Actions on Google card.
-2. Click on the Actions on Google card to bring up the integration screen and click **UPDATE** and then **VISIT CONSOLE**.
+2. Click on the Actions on Google card to bring up the integration screen and click **UPDATE** and then **VISIT CONSOLE**. Back at the console, click **TEST**.
   * If you don't see a TEST button, you need to click on the AUTHORIZE button first to give API.AI access to your Google account and Actions project.
 3. In the Test your Assistant app section of the integration screen, click on the Actions Simulator link to open a new browser for the Actions simulator.
