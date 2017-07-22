@@ -1,5 +1,7 @@
 # MailChimp App for the Google Assistant
-![alt text](images/screenshot.png "Logo Title Text 1")
+
+### Demo Video
+[![Product video](https://img.youtube.com/vi/-pvTue0quQc/0.jpg)](https://www.youtube.com/watch?v=-pvTue0quQc)
 
 This is a Node.js app for sending MailChimp email campaigns through Google Assistant.
 
