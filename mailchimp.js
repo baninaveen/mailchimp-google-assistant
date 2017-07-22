@@ -1,4 +1,4 @@
-var api_key, Mailchimp_SDK, mailchimp_api, distribution_lists 
+var api_key, Mailchimp_SDK, mailchimp_api, distribution_lists
 
 var MailChimp = function(api_key) {
     Mailchimp_SDK = require('mailchimp-api-v3')
@@ -17,7 +17,7 @@ MailChimp.prototype.createCampaign = function (list_id, error_callback, success_
             "recipients":{"list_id":`${list_id}`},
             "type":"regular",
             "settings":{
-              "subject_line":"Your Purchase Receipt",
+              "subject_line":"Update",
               "reply_to":"ckirksey3@gmail.com",
               "from_name":"Customer Service"
         }
