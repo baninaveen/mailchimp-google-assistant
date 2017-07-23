@@ -29,61 +29,41 @@ app.post('/', function (request, response) {
   console.log('Request headers: ' + JSON.stringify(request.headers));
   console.log('Request body: ' + JSON.stringify(request.body));
 
-  // Greet the user and direct them to next turn
-  function unhandledDeepLinks (assistant) {
-    if (assistant.hasSurfaceCapability(assistant.SurfaceCapabilities.SCREEN_OUTPUT)) {
-      assistant.ask(assistant.buildRichResponse()
-        .addSimpleResponse('Welcome to the Mailchimp Assistant! I\'d really rather \
-          not talk about ${assistant.getRawInput()}. Wouldn\'t you rather talk about \
-          email? I can tell you about your campaigns. \
-          Which do you want to hear about?')
-        .addSuggestions(['Campaigns']));
-    } else {
-      assistant.ask('Welcome to the Mailchimp Assistant! I\'d really rather \
-        not talk about ${assistant.getRawInput()}. Wouldn\'t you rather talk about \
-        email? I can tell you about your campaigns. \
-        Which do you want to hear about?',
-        ['I do not understand.']);
-    }
-  }
-
-  function handleCampaignSend(campaign_id) {
-    console.log("sent campaign")
-    assistant.ask('Congrats! We sent the campaign');
+  /**
+   * Creates a new email marketing campaign in the user's MailChimp account
+   * @param {Function} error_callback
+   * @param {Function} success_callback
+   */
+  function handleCampaignSend() {
+    assistant.tell('Congrats! We sent the campaign');
     return;
   }
 
   function handleError(error) {
     console.log(error)
-    assistant.ask('Sorry, something went wrong');
+    assistant.tell('Sorry, something went wrong');
     return;
   }
 
   function handleCampaignEdit(campaign_id) {
-    console.log("edited campaign with id of " + campaign_id);
     mailchimp.sendCampaign(campaign_id, handleError, handleCampaignSend);
     return;
   }
 
   function handleCampaignCreation(campaign_id) {
-    console.log("created campaign with id of " + campaign_id);
     current_campaign_id = campaign_id;
     assistant.ask('What should we say in the email?');
     return;
   }
 
   function handleEmailBodyGiven() {
-    console.log("handling user answer: ");
     let email_body = assistant.getRawInput();
-    console.log(email_body);
     mailchimp.editCampaign(email_body, current_campaign_id, handleError, handleCampaignEdit)
     return;
   }
 
   function handleListSelection() {
-    console.log("handling user answer: ");
     let answer = assistant.getSelectedOption();
-    console.log(answer);
     if(last_question_asked == 'which_list_to_send_to') {
       mailchimp.createCampaign(answer, handleError, handleCampaignCreation);
     }
