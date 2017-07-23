@@ -91,7 +91,6 @@ app.post('/', function (request, response) {
   }
 
   let actionMap = new Map();
-  actionMap.set(UNRECOGNIZED_DEEP_LINK, unhandledDeepLinks);
   actionMap.set(CREATE_CAMPAIGN, createAndSendCampaign);
   actionMap.set(LIST_SELECTED, handleListSelection);
   actionMap.set(EMAIL_BODY_GIVEN, handleEmailBodyGiven);
