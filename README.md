@@ -5,6 +5,8 @@
 
 This is a Node.js app for sending MailChimp email campaigns through Google Assistant.
 
+[Medium post](https://medium.com/@Kirksey/teaching-freddie-the-chimp-to-talk-to-google-d21612983b1d) about the development process.
+
 ## Usage
 Instructions for running the app yourself with Heroku.
 
